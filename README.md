@@ -1,2 +1,2 @@
-downloader
-credit to ffmpeg and yddlp
+downloader gui - 
+credit to ffmpeg and ytdlp - 
