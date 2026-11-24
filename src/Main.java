@@ -63,16 +63,20 @@ public class Main extends Application {
         qualityBox.setMaxWidth(Double.MAX_VALUE);
 
         ComboBox<String> typeBox = new ComboBox<>();
-        typeBox.getItems().addAll("mp4", "mkv", "mp3");
+        typeBox.getItems().addAll("mp4", "mkv", "mp3", "wav");
         typeBox.setValue("mp4");
         typeBox.setMaxWidth(Double.MAX_VALUE);
 
+        // Keep the two boxes consistent: an audio format means "Audio Only" and vice versa.
         qualityBox.valueProperty().addListener((o, old, val) -> {
-            if ("Audio Only".equals(val)) typeBox.setValue("mp3");
-            else if ("mp3".equals(typeBox.getValue())) typeBox.setValue("mp4");
+            if ("Audio Only".equals(val)) {
+                if (!isAudioFormat(typeBox.getValue())) typeBox.setValue("mp3");
+            } else if (isAudioFormat(typeBox.getValue())) {
+                typeBox.setValue("mp4");
+            }
         });
         typeBox.valueProperty().addListener((o, old, val) -> {
-            if ("mp3".equals(val)) qualityBox.setValue("Audio Only");
+            if (isAudioFormat(val)) qualityBox.setValue("Audio Only");
             else if ("Audio Only".equals(qualityBox.getValue())) qualityBox.setValue("Best");
         });
 
@@ -189,9 +193,14 @@ public class Main extends Application {
         stage.show();
     }
 
+    private static boolean isAudioFormat(String type) {
+        return "mp3".equals(type) || "wav".equals(type);
+    }
+
     private List<String> buildCommand(File ytdlp, String url, File destDir,
                                       String quality, String type, boolean playlist) {
-        boolean audioOnly = "Audio Only".equals(quality) || "mp3".equals(type);
+        boolean audioOnly = "Audio Only".equals(quality) || isAudioFormat(type);
+        String audioFormat = isAudioFormat(type) ? type : "mp3";
 
         List<String> cmd = new ArrayList<>();
         cmd.add(ytdlp.getAbsolutePath());
@@ -210,9 +219,12 @@ public class Main extends Application {
             cmd.add("ba/b");
             cmd.add("-x");
             cmd.add("--audio-format");
-            cmd.add("mp3");
-            cmd.add("--audio-quality");
-            cmd.add("0");
+            cmd.add(audioFormat);
+            if ("mp3".equals(audioFormat)) {
+                // Best VBR quality. WAV is uncompressed, so it has no quality setting.
+                cmd.add("--audio-quality");
+                cmd.add("0");
+            }
         } else {
             cmd.add("-f");
             if ("Best".equals(quality)) {
