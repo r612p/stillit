@@ -3,3 +3,4 @@ dist/
 *.class
 *.bak
 lib/
+tools/

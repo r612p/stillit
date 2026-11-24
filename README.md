@@ -14,6 +14,11 @@ you need:
   unzip it into a `lib\` folder in this repo (or leave it unzipped in Downloads)
 - `yt-dlp.exe` in your user folder or on PATH
 - ffmpeg (`winget install Gyan.FFmpeg`)
+- Deno (`winget install DenoLand.Deno`). yt-dlp needs it to download from
+  YouTube; without it every download fails with HTTP 403
+
+the simplest way is to put `yt-dlp.exe`, `ffmpeg.exe` and `deno.exe` in a
+`tools\` folder in this repo (it's ignored by git).
 
 then run, from this folder:
 
@@ -23,4 +28,4 @@ powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
 `build.ps1` finds everything above on its own. to use a specific copy, pass
-`-Jdk`, `-Fx`, `-YtDlp` or `-Ffmpeg` with its path.
+`-Jdk`, `-Fx`, `-YtDlp`, `-Ffmpeg` or `-Deno` with its path.
